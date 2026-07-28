@@ -309,6 +309,15 @@ export const serverApi = {
   deleteWorkspace(id: string): Promise<void> {
     return request(`/api/workspaces/${encodeURIComponent(id)}`, { method: "DELETE" })
   },
+  moveSessionToFolder(sessionId: string, targetPath: string): Promise<{ success: boolean; sessionId: string; previousPath: string; newPath: string }> {
+    return request<{ success: boolean; sessionId: string; previousPath: string; newPath: string }>(
+      `/api/sessions/${encodeURIComponent(sessionId)}/move`,
+      {
+        method: "POST",
+        body: JSON.stringify({ targetPath }),
+      },
+    )
+  },
   cloneWorkspaceRepository(payload: WorkspaceCloneRequest): Promise<WorkspaceCloneResponse> {
     return request<WorkspaceCloneResponse>("/api/workspaces/clone", {
       method: "POST",
