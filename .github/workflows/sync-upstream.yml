@@ -1,0 +1,63 @@
+name: Sync Upstream Dev
+
+on:
+  schedule:
+    - cron: "0 6 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout fork
+        uses: actions/checkout@v4
+        with:
+          ref: feat/move-session
+          fetch-depth: 0
+
+      - name: Set up Git
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+      - name: Add upstream remote
+        run: |
+          git remote add upstream https://github.com/NeuralNomadsAI/CodeNomad.git
+          git fetch upstream dev
+
+      - name: Check for upstream changes
+        id: check
+        run: |
+          BEHIND=$(git rev-list --count HEAD..upstream/dev)
+          echo "behind=$BEHIND" >> $GITHUB_OUTPUT
+          echo "Upstream dev is $BEHIND commits ahead"
+
+      - name: Merge upstream/dev
+        if: steps.check.outputs.behind != '0'
+        run: |
+          git merge upstream/dev --no-edit -m "chore: sync upstream/dev"
+
+      - name: Push merged changes
+        if: steps.check.outputs.behind != '0'
+        run: |
+          git push origin feat/move-session
+
+      - name: Open PR on conflict
+        if: failure() && steps.check.outputs.behind != '0'
+        run: |
+          gh pr create \
+            --base feat/move-session \
+            --head feat/move-session \
+            --title "chore: sync upstream/dev (CONFLICT - manual merge required)" \
+            --body "Automatic merge of upstream/dev into feat/move-session failed. Resolve conflicts manually.
+          \`\`\`
+          git fetch upstream dev
+          git merge upstream/dev
+          \`\`\`" \
+            --repo ashutoshsinghpr7/CodeNomad || true
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
