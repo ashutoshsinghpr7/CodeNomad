@@ -12,9 +12,15 @@ function sanitizeServerOwner(value: SettingsDoc): SettingsDoc {
     return next
   }
 
-  const rawApiKey = typeof speech.apiKey === "string" ? speech.apiKey.trim() : ""
+  let rawApiKey = typeof speech.apiKey === "string" ? speech.apiKey.trim() : ""
+  if (!rawApiKey && isPlainObject(speech.stt)) {
+    rawApiKey = typeof speech.stt.apiKey === "string" ? speech.stt.apiKey.trim() : ""
+  }
   if (rawApiKey) {
     delete speech.apiKey
+    if (isPlainObject(speech.stt)) {
+      delete speech.stt.apiKey
+    }
     speech.hasApiKey = true
   } else if (!("hasApiKey" in speech)) {
     speech.hasApiKey = false

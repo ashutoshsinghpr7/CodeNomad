@@ -2,16 +2,18 @@ import { Component, For, Show, createSignal, createMemo, createEffect, JSX, onCl
 import type { SessionStatus } from "../types/session"
 import type { SessionThread } from "../stores/session-state"
 import { getRetrySeconds, getSessionIdleFadeClass, getSessionRetry, getSessionStatus, shouldShowSessionStatus } from "../stores/session-status"
-import { Bot, User, Copy, Trash2, Pencil, ShieldAlert, ChevronDown, Search, Square, CheckSquare, MinusSquare, Split, RotateCw } from "lucide-solid"
+import { Bot, User, Copy, Trash2, Pencil, ShieldAlert, ChevronDown, Search, Square, CheckSquare, MinusSquare, Split, RotateCw, FolderOpen } from "lucide-solid"
 import KeyboardHint from "./keyboard-hint"
 import SessionRenameDialog from "./session-rename-dialog"
 import { keyboardRegistry } from "../lib/keyboard-registry"
 import { showToastNotification } from "../lib/notifications"
+import { serverApi } from "../lib/api-client"
 import { useI18n } from "../lib/i18n"
 import { showConfirmDialog } from "../stores/alerts"
 import {
   deleteSession,
   ensureSessionParentExpanded,
+  fetchSessions,
   getVisibleSessionIds,
   isSessionParentExpanded,
   loadMessages,
@@ -58,6 +60,9 @@ const SessionList: Component<SessionListProps> = (props) => {
   const { preferences } = useConfig()
   const [renameTarget, setRenameTarget] = createSignal<{ id: string; title: string; label: string } | null>(null)
   const [isRenaming, setIsRenaming] = createSignal(false)
+  const [moveTarget, setMoveTarget] = createSignal<{ id: string; title: string } | null>(null)
+  const [movePath, setMovePath] = createSignal("")
+  const [isMoving, setIsMoving] = createSignal(false)
 
   const [filterQuery, setFilterQuery] = createSignal("")
   const normalizedQuery = createMemo(() => (props.enableFilterBar ? filterQuery().trim().toLowerCase() : ""))
@@ -330,6 +335,41 @@ const SessionList: Component<SessionListProps> = (props) => {
 
   const closeRenameDialog = () => {
     setRenameTarget(null)
+  }
+
+  const openMoveDialog = (sessionId: string) => {
+    const session = sessionStateSessions().get(props.instanceId)?.get(sessionId)
+    if (!session) return
+    setMoveTarget({ id: sessionId, title: session.title ?? sessionId })
+    setMovePath("")
+  }
+
+  const closeMoveDialog = () => {
+    setMoveTarget(null)
+    setMovePath("")
+  }
+
+  const handleMoveSubmit = async () => {
+    const target = moveTarget()
+    const targetPath = movePath().trim()
+    if (!target || !targetPath) return
+
+    setIsMoving(true)
+    try {
+      const result = await serverApi.moveSessionToFolder(target.id, targetPath)
+      showToastNotification({
+        message: t("sessionList.move.success", { path: result.newPath }),
+        variant: "success",
+      })
+      // Refresh sessions since the moved session is no longer in this project
+      await fetchSessions(props.instanceId, { reset: true })
+      closeMoveDialog()
+    } catch (error) {
+      log.error(`Failed to move session ${target.id}:`, error)
+      showToastNotification({ message: t("sessionList.move.error"), variant: "error" })
+    } finally {
+      setIsMoving(false)
+    }
   }
 
   const handleRenameSubmit = async (nextTitle: string) => {
@@ -671,6 +711,19 @@ const SessionList: Component<SessionListProps> = (props) => {
               </span>
               <span
                 class={`session-item-close opacity-80 hover:opacity-100 ${isActive() ? "hover:bg-white/20" : "hover:bg-surface-hover"}`}
+                onClick={(event) => {
+                  event.stopPropagation()
+                  openMoveDialog(rowProps.sessionId)
+                }}
+                role="button"
+                tabIndex={0}
+                aria-label={t("sessionList.actions.move.ariaLabel")}
+                title={t("sessionList.actions.move.title")}
+              >
+                <FolderOpen class="w-3 h-3" />
+              </span>
+              <span
+                class={`session-item-close opacity-80 hover:opacity-100 ${isActive() ? "hover:bg-white/20" : "hover:bg-surface-hover"}`}
                 onClick={(event) => handleDeleteSession(event, rowProps.sessionId)}
                 role="button"
                 tabIndex={0}
@@ -904,6 +957,36 @@ const SessionList: Component<SessionListProps> = (props) => {
         onRename={handleRenameSubmit}
         onClose={closeRenameDialog}
       />
+
+      <Show when={moveTarget()}>
+        <div class="fixed inset-0 z-50 flex items-center justify-center bg-black/50" onClick={closeMoveDialog}>
+          <div class="bg-surface-primary border border-base rounded p-6 w-96 shadow-lg" onClick={(e) => e.stopPropagation()}>
+            <h3 class="text-lg font-semibold text-primary mb-2">{t("sessionList.move.title")}</h3>
+            <p class="text-sm text-muted mb-4">{t("sessionList.move.description", { label: moveTarget()?.title ?? "" })}</p>
+            <label class="block text-sm text-muted mb-1" for="move-session-path-input">{t("sessionList.move.inputLabel")}</label>
+            <input
+              id="move-session-path-input"
+              type="text"
+              class="form-input w-full mb-4"
+              value={movePath()}
+              onInput={(e) => setMovePath(e.currentTarget.value)}
+              placeholder={t("sessionList.move.inputPlaceholder")}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") void handleMoveSubmit()
+                if (e.key === "Escape") closeMoveDialog()
+              }}
+            />
+            <div class="flex justify-end gap-3">
+              <button type="button" class="button-secondary" onClick={closeMoveDialog} disabled={isMoving()}>
+                {t("sessionList.move.cancelLabel")}
+              </button>
+              <button type="button" class="button-primary" onClick={handleMoveSubmit} disabled={isMoving() || !movePath().trim()}>
+                {isMoving() ? t("sessionList.move.moving") : t("sessionList.move.confirmLabel")}
+              </button>
+            </div>
+          </div>
+        </div>
+      </Show>
     </div>
   )
 }
