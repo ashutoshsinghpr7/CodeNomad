@@ -1,3 +1,4 @@
+Disclaimer: This fork is a personal version of Code Nomad with additional features based on personal experience with it.
 # CodeNomad
 
 ## The AI Coding Cockpit for OpenCode
