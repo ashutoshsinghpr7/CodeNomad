@@ -36,6 +36,12 @@ export const settingsMessages = {
 
   "thinkingSelector.variant.default": "По умолчанию",
   "thinkingSelector.label": "Размышления: {variant}",
+  "goalStatus.title": "Цель",
+  "goalStatus.running": "Выполняется",
+  "goalStatus.done": "Завершено",
+  "goalStatus.failed": "Остановлено",
+  "goalStatus.paused": "Пауза",
+  "goalStatus.steps": "Шаг {current} из {max}",
 
   "envEditor.title": "Переменные окружения",
   "envEditor.count.one": "({count} переменная)",

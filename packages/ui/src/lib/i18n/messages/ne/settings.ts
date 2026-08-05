@@ -36,6 +36,12 @@ export const settingsMessages = {
 
   "thinkingSelector.variant.default": "पूर्वनिर्धारित",
   "thinkingSelector.label": "सोचाइ: {variant}",
+  "goalStatus.title": "लक्ष्य",
+  "goalStatus.running": "चलिरहेको",
+  "goalStatus.done": "सम्पन्न",
+  "goalStatus.failed": "रोकिएको",
+  "goalStatus.paused": "विराममा",
+  "goalStatus.steps": "चरण {current} / {max}",
 
   "envEditor.title": "वातावरण चरहरू (Environment Variables)",
   "envEditor.count.one": "({count} चर)",

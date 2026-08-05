@@ -17,6 +17,7 @@ import WorktreeSelector from "../../worktree-selector"
 import AgentSelector from "../../agent-selector"
 import ModelSelector from "../../model-selector"
 import ThinkingSelector from "../../thinking-selector"
+import GoalStatus from "../../goal-status"
 import { getLogger } from "../../../lib/logger"
 
 const log = getLogger("session")
@@ -193,6 +194,8 @@ const SessionSidebar: Component<SessionSidebarProps> = (props) => (
                 currentAgent={activeSession().agent}
                 onAgentChange={(agent) => props.onSidebarAgentChange(activeSession().id, agent)}
               />
+
+              <GoalStatus session={activeSession()} />
 
               <ModelSelector
                 instanceId={props.instanceId}

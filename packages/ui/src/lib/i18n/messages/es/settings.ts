@@ -36,6 +36,12 @@ export const settingsMessages = {
 
   "thinkingSelector.variant.default": "Por defecto",
   "thinkingSelector.label": "Pensamiento: {variant}",
+  "goalStatus.title": "Objetivo",
+  "goalStatus.running": "Ejecutando",
+  "goalStatus.done": "Completo",
+  "goalStatus.failed": "Detenido",
+  "goalStatus.paused": "En pausa",
+  "goalStatus.steps": "Paso {current} de {max}",
 
   "envEditor.title": "Variables de entorno",
   "envEditor.count.one": "({count} variable)",

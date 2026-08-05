@@ -36,6 +36,12 @@ export const settingsMessages = {
 
   "thinkingSelector.variant.default": "ברירת מחדל",
   "thinkingSelector.label": "חשיבה: {variant}",
+  "goalStatus.title": "מטרה",
+  "goalStatus.running": "רץ",
+  "goalStatus.done": "הושלם",
+  "goalStatus.failed": "הופסק",
+  "goalStatus.paused": "מושהה",
+  "goalStatus.steps": "שלב {current} מתוך {max}",
 
   "envEditor.title": "משתני סביבה",
   "envEditor.count.one": "({count} משתנה)",

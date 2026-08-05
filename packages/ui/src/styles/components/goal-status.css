@@ -1,0 +1,58 @@
+/* Goal mode status card shown in the session sidebar */
+.goal-status-card {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  padding: 0.5rem 0.65rem;
+  border: 1px solid var(--border-base);
+  background: var(--surface-base);
+}
+
+.goal-status-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+
+.goal-status-title {
+  font-size: 0.7rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-secondary);
+}
+
+.goal-status-badge {
+  font-size: 0.7rem;
+  font-weight: 500;
+  padding: 0.1rem 0.4rem;
+  border: 1px solid var(--border-base);
+}
+
+.goal-status-badge--running {
+  color: var(--accent-primary);
+}
+
+.goal-status-badge--done {
+  color: var(--status-success);
+}
+
+.goal-status-badge--failed {
+  color: var(--danger-soft-bg-strong);
+}
+
+.goal-status-text {
+  font-size: 0.75rem;
+  line-height: 1.3;
+  color: var(--text-primary);
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.goal-status-steps {
+  font-size: 0.7rem;
+  color: var(--text-secondary);
+}
