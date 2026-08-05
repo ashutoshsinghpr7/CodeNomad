@@ -36,6 +36,12 @@ export const settingsMessages = {
 
   "thinkingSelector.variant.default": "デフォルト",
   "thinkingSelector.label": "思考: {variant}",
+  "goalStatus.title": "目標",
+  "goalStatus.running": "実行中",
+  "goalStatus.done": "完了",
+  "goalStatus.failed": "停止",
+  "goalStatus.paused": "一時停止",
+  "goalStatus.steps": "ステップ {current} / {max}",
 
   "envEditor.title": "環境変数",
   "envEditor.count.one": "（{count} 個）",

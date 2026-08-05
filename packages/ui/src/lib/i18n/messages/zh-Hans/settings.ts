@@ -36,6 +36,12 @@ export const settingsMessages = {
 
   "thinkingSelector.variant.default": "默认",
   "thinkingSelector.label": "思考：{variant}",
+  "goalStatus.title": "目标",
+  "goalStatus.running": "运行中",
+  "goalStatus.done": "已完成",
+  "goalStatus.failed": "已停止",
+  "goalStatus.paused": "已暂停",
+  "goalStatus.steps": "步骤 {current} / {max}",
 
   "envEditor.title": "环境变量",
   "envEditor.count.one": "（{count} 个变量）",
